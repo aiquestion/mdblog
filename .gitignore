@@ -1,0 +1,8 @@
+#no build file
+mdblog
+
+#no tmp files
+*.tmp
+
+#vi swp file
+*.swp
