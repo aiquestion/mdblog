@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
+	"mdblog/models"
 )
 
 type GithubController struct {
@@ -10,6 +11,7 @@ type GithubController struct {
 
 // @router / [post]
 func (o *GithubController) Post() {
-	o.Data["json"] = map[string]string{"ObjectId": "1"}
+	isValid := models.ValidateSignature(o.Ctx.Input.Header("X-Hub-Signature"), string(o.Ctx.Input.RequestBody))
+	o.Data["json"] = map[string]bool{"ObjectId": isValid}
 	o.ServeJSON()
 }
