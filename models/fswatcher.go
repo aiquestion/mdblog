@@ -28,8 +28,7 @@ func Watch(path string) chan error {
 			select {
 			case event := <-watcher.Events:
 				log.Println("event:", event)
-				switch event.Op {
-				case fsnotify.Create:
+				if event.Op&fsnotify.Create == fsnotify.Create {
 					s, e := os.Stat(event.Name)
 					if e != nil {
 						continue
@@ -38,19 +37,10 @@ func Watch(path string) chan error {
 					if s.IsDir() {
 						watcher.Add(event.Name)
 					}
-					if strings.HasSuffix(event.Name, ".md") {
-						log.Println("md file changed:", event)
-					}
-				case fsnotify.Write:
-					if strings.HasSuffix(event.Name, ".md") {
-						log.Println("md file changed:", event)
-					}
-				case fsnotify.Remove:
-					if strings.HasSuffix(event.Name, ".md") {
-						log.Println("md file changed:", event)
-					}
 				}
-
+				if strings.HasSuffix(event.Name, ".md") {
+					log.Println("md file changed:", event)
+				}
 			case err := <-watcher.Errors:
 				log.Println("err:", err)
 			case <-stop:
