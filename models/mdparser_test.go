@@ -11,7 +11,7 @@ func assert(a, b []byte, t *testing.T) {
 	}
 }
 
-func TestNewLine(t *testing.T) {
+func TestNewLineRegex(t *testing.T) {
 	s := []byte("\n\n\n")
 	p := new(Parser)
 	p.Init()
@@ -22,7 +22,7 @@ func TestNewLine(t *testing.T) {
 	}
 }
 
-func TestTitleAtx(t *testing.T) {
+func TestTitleAtxRegex(t *testing.T) {
 	s := []byte("###  i'm a title  ######\n\n")
 	p := new(Parser)
 	p.Init()
@@ -32,7 +32,7 @@ func TestTitleAtx(t *testing.T) {
 	assert([]byte("i'm a title"), m[2], t)
 }
 
-func TestTitleSetext(t *testing.T) {
+func TestTitleSetextRegex(t *testing.T) {
 	s := []byte("  i'm a title\n\n===========\n\n")
 	p := new(Parser)
 	p.Init()
@@ -42,22 +42,31 @@ func TestTitleSetext(t *testing.T) {
 	assert([]byte("==========="), m[2], t)
 }
 
-func TestBlockQuotes(t *testing.T) {
-	s := []byte("> this is a quotes\n> test1\n")
+func TestBlockQuotesRegex(t *testing.T) {
+	s := []byte("> this is a quotes\n")
 	p := new(Parser)
 	p.Init()
 	m := p.blockRegex.block_quotes.FindSubmatch(s)
 	t.Log("matched string:", m)
 	assert([]byte(" this is a quotes"), m[1], t)
-	assert([]byte("> test1\n"), m[2], t)
 }
 
-func TestBlockQuotesNoBeginSign(t *testing.T) {
-	s := []byte("> this is a quotes\n test1\n")
+func TestListNumberRegex(t *testing.T) {
+	s := []byte("90. this is a list\n")
 	p := new(Parser)
 	p.Init()
-	m := p.blockRegex.block_quotes.FindSubmatch(s)
+	m := p.blockRegex.list.FindSubmatch(s)
 	t.Log("matched string:", m)
-	assert([]byte(" this is a quotes"), m[1], t)
-	assert([]byte(" test1\n"), m[2], t)
+	assert([]byte("90."), m[1], t)
+	assert([]byte("this is a list"), m[2], t)
+}
+
+func TestListRegex(t *testing.T) {
+	s := []byte("*   this is a list\n")
+	p := new(Parser)
+	p.Init()
+	m := p.blockRegex.list.FindSubmatch(s)
+	t.Log("matched string:", m)
+	assert([]byte("*"), m[1], t)
+	assert([]byte("this is a list"), m[2], t)
 }
