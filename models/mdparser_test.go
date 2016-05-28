@@ -70,3 +70,12 @@ func TestListRegex(t *testing.T) {
 	assert([]byte("*"), m[1], t)
 	assert([]byte("this is a list"), m[2], t)
 }
+
+func TestIndentBlockRegex(t *testing.T) {
+	s := []byte("    this is a line\n")
+	p := new(Parser)
+	p.Init()
+	m := p.blockRegex.indent_block.FindSubmatch(s)
+	t.Log("matched string:", m)
+	assert([]byte("this is a line"), m[1], t)
+}
